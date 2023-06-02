@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUVING</title>
+    <link rel="stylesheet" href="main.css">
+
+</head>
+
+<body>
+    <header>
+        <div class="title">
+            <h1>MUVING</h1>
+        </div>
+    
+    <div class="search">
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="제목으로 영화 찾기 ! ">
+            <button id="search-btn">SEARCH</button>
+        </form>
+    </div>
+    </header>
+    <div class="movieCards" id="movieList"></div>
+    <script>
+
+        const key = "06f2084d7dd2df5627a3e9c9a1ee55a0";
+
+        // 영화카드
+        function MovieCards() {
+            const apiurl = `https://api.themoviedb.org/3/trending/all/week?api_key=06f2084d7dd2df5627a3e9c9a1ee55a0&language=ko-KR`;
+            fetch(apiurl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const movies = data.results || [];
+                    const movieCards = document.getElementById('movieList');
+
+                    movies.forEach(movie => {
+                        const card = document.createElement('div');
+                        card.classList.add('movie-card');
+
+                        const posterContainer = document.createElement('div');
+                        posterContainer.classList.add('poster-container');
+
+                        const poster = document.createElement('img');
+                        poster.src = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+                        poster.alt = movie.title || movie.name;
+                        poster.setAttribute('id', movie.id);
+                        card.appendChild(poster);
+
+                        const movieInfo = document.createElement('div');
+                        movieInfo.classList.add('movie-info');
+
+                        const overview = document.createElement('p');
+                        overview.textContent = movie.overview;
+                        movieInfo.appendChild(overview);
+
+                        const voteAverage = document.createElement('p');
+                        voteAverage.textContent = `평점: ${movie.vote_average}`;
+                        movieInfo.appendChild(voteAverage);
+
+                        posterContainer.appendChild(movieInfo);
+                        card.appendChild(posterContainer);
+
+                        const title = document.createElement('h2');
+                        title.textContent = movie.title || movie.name;
+                        card.appendChild(title);
+
+                        movieCards.appendChild(card);
+                        
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // 검색 필터
+
+
+        function filterList() {
+            const searchInput = document.querySelector("#search-input");
+            const filter = searchInput.value.toLowerCase();
+            const listItems = document.querySelectorAll('.movie-card');
+
+            listItems.forEach((movieCard) => {
+                let title = movieCard.querySelector('.movie-card h2').textContent.toLowerCase();
+                if (title.includes(filter)) {
+                    movieCard.style.display = '';
+                } else {
+                    movieCard.style.display = 'none';
+                }
+            });
+        }
+        window.addEventListener('load', MovieCards);
+        document.querySelector('#search-btn').addEventListener('click', filterList);
+
+        document.querySelector('#search-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            filterList();
+        });
+
+        // alert:id
+
+        document.addEventListener('click', function(event) {
+            const clickedElement = event.target;
+            if (clickedElement.tagName === 'IMG' && clickedElement.parentNode.classList.contains('movie-card')) {
+                const movieID = clickedElement.getAttribute('id');
+                alert('영화 ID: ' + movieID);
+            }
+            });
+
+    // hover:영화정보
+    const movieCards = document.querySelectorAll('.movie-card');
+
+    movieCards.forEach(movieCard => {
+        const poster = movieCard.querySelector('.poster-container');
+        const movieInfo = movieCard.querySelector('.movie-info');
+
+        posterContainer.addEventListener('mouseenter', () => {
+            poster.style.filter = 'grayscale(100%)';
+            info.style.opacity = '1';
+        });
+
+        posterContainer.addEventListener('mouseleave', () => {
+            poster.style.filter = '';
+            info.style.opacity = '0';
+        });
+        });
+
+
+
+        
+
+
+    </script>
+</body>
+
+</html>
